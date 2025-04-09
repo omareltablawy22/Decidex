@@ -1,0 +1,136 @@
+@tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    @layer base {
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        --accent: 210 40% 96.1%;
+        /* --accent-foreground: 222.2 47.4% 11.2%; /* Adjusted */ */
+        --accent-foreground: hsl(var(--primary)); /* Using Shadcn default relation */
+
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+
+        --radius: 0.5rem;
+
+        /* Shadcn UI specific (from 5e5c87ba0fcdd97e.css) */
+        --scn-background: 0 0% 100%;
+        --scn-foreground: 240 10% 3.9%;
+        --scn-muted: 240 4.8% 95.9%;
+        --scn-muted-foreground: 240 3.8% 46.1%;
+        --scn-card: 0 0% 100%;
+        --scn-card-foreground: 240 10% 3.9%;
+        --scn-popover: 0 0% 100%;
+        --scn-popover-foreground: 240 10% 3.9%;
+        --scn-border: 240 5.9% 90%;
+        --scn-input: 240 5.9% 90%;
+        --scn-primary: 240 5.9% 10%;
+        --scn-primary-foreground: 0 0% 98%;
+        --scn-secondary: 240 4.8% 95.9%;
+        --scn-secondary-foreground: 240 5.9% 10%;
+        --scn-accent: 240 4.8% 95.9%;
+        /* --scn-accent-foreground: ; /* Kept empty as in source */ */
+        --scn-destructive: 0 84.2% 60.2%;
+        --scn-destructive-foreground: 0 0% 98%;
+        --scn-warning: 35,100%,52%;
+        --scn-warning-foreground: 0 0% 9%;
+        --scn-ring: 240 5% 64.9%;
+        --scn-radius: 0.5rem;
+
+        /* Chart colors */
+        --chart-1: 142 76% 36%; /* Adjusted based on globals.css */
+        --chart-2: 217 91% 60%; /* Adjusted based on globals.css */
+        --chart-3: 43 96% 58%;  /* Adjusted based on globals.css */
+        --chart-4: 0 84% 60%;   /* Adjusted based on globals.css */
+        --chart-5: 262 83% 58%; /* Adjusted based on globals.css */
+
+         /* Sidebar colors (likely from Shadcn theme) */
+        --scn-sidebar-background:0 0% 98%;
+        --scn-sidebar-foreground:240 5.3% 26.1%;
+        --scn-sidebar-primary:240 5.9% 10%;
+        --scn-sidebar-primary-foreground:0 0% 98%;
+        --scn-sidebar-accent:240 4.8% 95.9%;
+        --scn-sidebar-accent-foreground:240 5.9% 10%;
+        --scn-sidebar-border:220 13% 91%;
+        --scn-sidebar-ring:240 5% 64.9%;
+      }
+
+      .dark {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 0 0% 98%;
+        --primary-foreground: 240 5.9% 10%;
+        --secondary: 240 3.7% 15.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
+        --accent: 240 3.7% 15.9%;
+        /* --accent-foreground: 0 0% 98%; /* Define if needed */ */
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 85.7% 97.3%;
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 240 3.7% 15.9%;
+         /* Chart colors dark */
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
+         /* Sidebar dark */
+        --scn-sidebar-background: 240 5.9% 10%;
+        --scn-sidebar-foreground: 240 4.8% 95.9%;
+        --scn-sidebar-primary: 224.3 76.3% 48%;
+        --scn-sidebar-primary-foreground: 0 0% 100%;
+        --scn-sidebar-accent: 240 3.7% 15.9%;
+        --scn-sidebar-accent-foreground: 240 4.8% 95.9%;
+        --scn-sidebar-border: 240 3.7% 15.9%;
+        --scn-sidebar-ring: 240 4.9% 83.9%;
+      }
+    }
+
+    @layer base {
+      * {
+        @apply border-border;
+      }
+      body {
+        @apply bg-background text-foreground;
+      }
+    }
+
+    @layer components {
+      .pattern-islamic {
+         background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23047857' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+    }
+
+    [dir="rtl"] .calendar {
+      direction: rtl;
+    }
