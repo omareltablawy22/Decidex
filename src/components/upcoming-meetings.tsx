@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card" // Adjusted path
-import { Badge } from "@/components/ui/badge" // Adjusted path
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar" // Adjusted path
-import { CalendarIcon, Clock, MapPin, Users, CheckCircle2, XCircle } from "lucide-react"
-import { format, parse, isBefore } from "date-fns"
-import { ar } from "date-fns/locale"
-import { boardMembers } from "@/lib/data" // Adjusted path
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CalendarIcon, Clock, MapPin, Users, CheckCircle2, XCircle } from "lucide-react";
+import { format, parse, isBefore } from "date-fns";
+import { ar } from "date-fns/locale";
+import { boardMembers } from "@/lib/data";
 
 interface UpcomingMeetingsProps {
-  meetings: any[]
-  language: "en" | "ar"
-  onMeetingSelect: (meeting: any) => void
+  meetings: any[];
+  language: "en" | "ar";
+  onMeetingSelect: (meeting: any) => void;
 }
 
 export function UpcomingMeetings({ meetings, language, onMeetingSelect }: UpcomingMeetingsProps) {
@@ -23,49 +23,54 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
     attendees: language === "en" ? "Attendees" : "الحضور",
     dateFormat: language === "en" ? "MMM d, yyyy" : "d MMM yyyy",
     noMeetings: language === "en" ? "No upcoming meetings" : "لا توجد اجتماعات قادمة",
-  }
+  };
 
   // Sort meetings by date (closest first)
   const sortedMeetings = [...meetings].sort((a, b) => {
-    const dateA = parse(a.date, "yyyy-MM-dd", new Date())
-    const dateB = parse(b.date, "yyyy-MM-dd", new Date())
-    return dateA.getTime() - dateB.getTime()
-  })
+    try {
+      const dateA = parse(a.date, "yyyy-MM-dd", new Date());
+      const dateB = parse(b.date, "yyyy-MM-dd", new Date());
+      return dateA.getTime() - dateB.getTime();
+    } catch (error) {
+      console.error("Error sorting meetings:", error);
+      return 0;
+    }
+  });
 
   // Filter to only show upcoming meetings (today and future)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const upcomingMeetings = sortedMeetings.filter((meeting) => {
-      try { // Add error handling for parse
-        const meetingDate = parse(meeting.date, "yyyy-MM-dd", new Date())
-        return !isBefore(meetingDate, today)
-      } catch(e) {
-        console.error("Error parsing meeting date:", meeting.date, e);
-        return false; // Exclude invalid dates
-      }
-  })
+    try {
+      const meetingDate = parse(meeting.date, "yyyy-MM-dd", new Date());
+      return !isBefore(meetingDate, today);
+    } catch (error) {
+      console.error("Error filtering meeting date:", meeting.date, error);
+      return false; // Exclude invalid dates
+    }
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "confirmed":
-        return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">{translations.confirmed}</Badge>
+        return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">{translations.confirmed}</Badge>;
       case "tentative":
         return (
           <Badge variant="outline" className="border-amber-200 text-amber-800">
             {translations.tentative}
           </Badge>
-        )
+        );
       case "canceled":
         return (
           <Badge variant="secondary" className="bg-red-100 text-red-800 border-red-200">
             {translations.canceled}
           </Badge>
-        )
+        );
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <Card className="shadow-sm">
@@ -78,11 +83,11 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
             {upcomingMeetings.map((meeting) => {
               let meetingDate: Date | null = null;
               try {
-                  meetingDate = parse(meeting.date, "yyyy-MM-dd", new Date());
-              } catch (e) {
-                  console.error("Error parsing meeting date in map:", meeting.date, e);
+                meetingDate = parse(meeting.date, "yyyy-MM-dd", new Date());
+              } catch (error) {
+                console.error("Error parsing meeting date in map:", meeting.date, error);
               }
-              const confirmedAttendees = meeting.attendees?.filter((a: any) => a.confirmed).length ?? 0; // Added optional chaining and default
+              const confirmedAttendees = meeting.attendees?.filter((a: any) => a.confirmed).length ?? 0;
 
               return (
                 <div
@@ -100,7 +105,11 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
                   <div className="space-y-2 text-sm text-gray-500">
                     <div className="flex items-center">
                       <CalendarIcon className="h-4 w-4 mr-2 text-gray-400" />
-                      {meetingDate ? format(meetingDate, translations.dateFormat, { locale: language === "ar" ? ar : undefined }) : "Invalid Date"}
+                      {meetingDate
+                        ? format(meetingDate, translations.dateFormat, {
+                            locale: language === "ar" ? ar : undefined,
+                          })
+                        : "Invalid Date"}
                     </div>
 
                     <div className="flex items-center">
@@ -117,18 +126,20 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
                   <div className="mt-3">
                     <div className="flex items-center text-xs text-gray-500 mb-2">
                       <Users className="h-3 w-3 mr-1" />
-                      {translations.attendees}: {confirmedAttendees}/{meeting.attendees?.length ?? 0} {/* Added optional chaining and default */}
+                      {translations.attendees}: {confirmedAttendees}/{meeting.attendees?.length ?? 0}
                     </div>
 
                     <div className="flex -space-x-2 overflow-hidden">
-                      {meeting.attendees?.map((attendee: any) => { // Added optional chaining
-                        const member = boardMembers.find((m) => m.id === attendee.id)
-                        if (!member) return null
+                      {meeting.attendees?.map((attendee: any) => {
+                        const member = boardMembers.find((m) => m.id === attendee.id);
+                        if (!member) return null;
 
                         return (
                           <div key={attendee.id} className="relative">
                             <Avatar
-                              className={`h-8 w-8 border-2 ${attendee.confirmed ? "border-emerald-200" : "border-gray-200"}`}
+                              className={`h-8 w-8 border-2 ${
+                                attendee.confirmed ? "border-emerald-200" : "border-gray-200"
+                              }`}
                             >
                               <AvatarImage src={member.avatar} alt={member.name} />
                               <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
@@ -140,12 +151,12 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
                               <XCircle className="h-3 w-3 text-red-500 absolute -bottom-0.5 -right-0.5 bg-white rounded-full" />
                             )}
                           </div>
-                        )
+                        );
                       })}
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         ) : (
@@ -153,5 +164,5 @@ export function UpcomingMeetings({ meetings, language, onMeetingSelect }: Upcomi
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,42 +1,41 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button" // Adjusted path
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card" // Adjusted path
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs" // Adjusted path
-import { DecisionOutcomes } from "./decision-outcomes" // Adjusted path
-import { Badge } from "@/components/ui/badge" // Adjusted path
-import { CheckCircle2, XCircle, AlertCircle, Clock, ThumbsUp, ThumbsDown, Minus } from "lucide-react" // Added missing icons
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DecisionOutcomes } from "./decision-outcomes";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, XCircle, AlertCircle, Clock, ThumbsUp, ThumbsDown, Minus } from "lucide-react";
 
-// Helper component for compact voting cards (needed within this file)
+// Helper component for compact voting cards
 interface DecisionVotingCardProps {
-  decision: any
-  language: "en" | "ar"
-  onVoteSubmit: (decisionId: string, vote: string) => void
-  compact?: boolean
+  decision: any;
+  language: "en" | "ar";
+  onVoteSubmit: (decisionId: string, vote: string) => void;
+  compact?: boolean;
 }
 
 function DecisionVotingCard({ decision, language, onVoteSubmit, compact = false }: DecisionVotingCardProps) {
-  const [selectedVote, setSelectedVote] = useState<string | null>(null)
+  const [selectedVote, setSelectedVote] = useState<string | null>(null);
 
   const translations = {
     inFavor: language === "en" ? "In Favor" : "موافق",
     against: language === "en" ? "Against" : "معارض",
     abstain: language === "en" ? "Abstain" : "امتناع",
     submit: language === "en" ? "Submit" : "إرسال",
-  }
+  };
 
   const handleVoteSelect = (vote: string) => {
-    setSelectedVote(vote)
-  }
+    setSelectedVote(vote);
+  };
 
   const handleVoteSubmit = () => {
     if (selectedVote) {
-      onVoteSubmit(decision.id, selectedVote)
-      setSelectedVote(null)
-       // Dialog closing logic needs to be handled if this card is inside one
+      onVoteSubmit(decision.id, selectedVote);
+      setSelectedVote(null);
     }
-  }
+  };
 
   return (
     <div className={compact ? "scale-90 origin-left" : ""}>
@@ -76,18 +75,19 @@ function DecisionVotingCard({ decision, language, onVoteSubmit, compact = false 
         </Button>
       )}
     </div>
-  )
+  );
 }
 
-
 interface VotingDashboardProps {
-  language: "en" | "ar"
-  meetings: any[]
-  onVoteSubmit: (decisionId: string, vote: string) => void
+  language: "en" | "ar";
+  meetings: any[];
+  onVoteSubmit: (decisionId: string, vote: string) => void;
 }
 
 export function VotingDashboard({ language, meetings, onVoteSubmit }: VotingDashboardProps) {
-  const [selectedMeetingId, setSelectedMeetingId] = useState<number | null>(meetings.length > 0 ? meetings[0].id : null)
+  const [selectedMeetingId, setSelectedMeetingId] = useState<number | null>(
+    meetings.length > 0 ? meetings[0].id : null
+  );
 
   const translations = {
     votingDashboard: language === "en" ? "Voting Dashboard" : "لوحة التصويت",
@@ -102,41 +102,41 @@ export function VotingDashboard({ language, meetings, onVoteSubmit }: VotingDash
     votingStats: language === "en" ? "Voting Statistics" : "إحصائيات التصويت",
     totalDecisions: language === "en" ? "Total Decisions" : "إجمالي القرارات",
     awaitingYourVote: language === "en" ? "Awaiting Your Vote" : "بانتظار تصويتك",
-  }
+  };
 
   // Get all decisions from all meetings
   const allDecisions = meetings.flatMap((meeting) =>
-    (meeting.decisions || []).map((decision: any) => ({ // Added default empty array
+    (meeting.decisions || []).map((decision: any) => ({
       ...decision,
       meetingTitle: meeting.title,
       meetingId: meeting.id,
-    })),
-  )
+    }))
+  );
 
   // Get open votes
-  const openVotes = allDecisions.filter((decision) => decision.voting?.status === "open") // Added optional chaining
+  const openVotes = allDecisions.filter((decision) => decision.voting?.status === "open");
 
   // Get decisions awaiting current user's vote
   const awaitingUserVote = openVotes.filter((decision) => {
-    const userVote = decision.voting?.votes?.find((v: any) => v.memberId === "bm1") // Added optional chaining
-    return userVote && userVote.vote === null
-  })
+    const userVote = decision.voting?.votes?.find((v: any) => v.memberId === "bm1");
+    return userVote && userVote.vote === null;
+  });
 
   // Count decisions by outcome
-  const successCount = allDecisions.filter((d) => d.outcome === "success").length
-  const failureCount = allDecisions.filter((d) => d.outcome === "failure").length
-  const reviewCount = allDecisions.filter((d) => d.outcome === "needs-review").length
-  const pendingCount = allDecisions.filter((d) => d.outcome === null).length
+  const successCount = allDecisions.filter((d) => d.outcome === "success").length;
+  const failureCount = allDecisions.filter((d) => d.outcome === "failure").length;
+  const reviewCount = allDecisions.filter((d) => d.outcome === "needs-review").length;
+  const pendingCount = allDecisions.filter((d) => d.outcome === null).length;
 
   // Get decisions for the selected meeting
-  const selectedMeeting = meetings.find((m) => m.id === selectedMeetingId)
+  const selectedMeeting = meetings.find((m) => m.id === selectedMeetingId);
   const meetingDecisions = selectedMeeting
-    ? (selectedMeeting.decisions || []).map((decision: any) => ({ // Added default empty array
+    ? (selectedMeeting.decisions || []).map((decision: any) => ({
         ...decision,
         meetingTitle: selectedMeeting.title,
         meetingId: selectedMeeting.id,
       }))
-    : []
+    : [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -171,7 +171,11 @@ export function VotingDashboard({ language, meetings, onVoteSubmit }: VotingDash
                         </div>
                         <p className="text-sm text-gray-600 mb-4">{decision.notes}</p>
 
-                        <DecisionVotingCard decision={decision} language={language} onVoteSubmit={onVoteSubmit} />
+                        <DecisionVotingCard 
+                          decision={decision} 
+                          language={language} 
+                          onVoteSubmit={onVoteSubmit}
+                        />
                       </div>
                     ))}
                   </div>
@@ -285,5 +289,5 @@ export function VotingDashboard({ language, meetings, onVoteSubmit }: VotingDash
         )}
       </div>
     </div>
-  )
+  );
 }

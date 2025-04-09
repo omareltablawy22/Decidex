@@ -1,4 +1,5 @@
-import type React from "react"
+import type React from "react";
+
 export function Vote(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -18,5 +19,5 @@ export function Vote(props: React.SVGProps<SVGSVGElement>) {
       <path d="M12 15v6" />
       <path d="m9 18 3-3 3 3" />
     </svg>
-  )
+  );
 }

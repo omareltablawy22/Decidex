@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { ThumbsUp, ThumbsDown, Minus, Lock, AlertCircle } from "lucide-react"
-import { boardMembers } from "@/lib/data"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { ThumbsUp, ThumbsDown, Minus, Lock, AlertCircle } from "lucide-react";
+import { boardMembers } from "@/lib/data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface VotingSystemProps {
-  decision: any
-  language: "en" | "ar"
-  onVoteSubmit: (decisionId: string, vote: string) => void
+  decision: any;
+  language: "en" | "ar";
+  onVoteSubmit: (decisionId: string, vote: string) => void;
 }
 
 export function VotingSystem({ decision, language, onVoteSubmit }: VotingSystemProps) {
-  const [selectedVote, setSelectedVote] = useState<string | null>(null)
-  const [showVotingDetails, setShowVotingDetails] = useState(false) // State to control the details dialog
+  const [selectedVote, setSelectedVote] = useState<string | null>(null);
+  const [showVotingDetails, setShowVotingDetails] = useState(false);
 
   const translations = {
     voting: language === "en" ? "Voting" : "التصويت",
@@ -36,75 +36,72 @@ export function VotingSystem({ decision, language, onVoteSubmit }: VotingSystemP
     notVoted: language === "en" ? "Not Voted" : "لم يصوت",
     votingResults: language === "en" ? "Voting Results" : "نتائج التصويت",
     close: language === "en" ? "Close" : "إغلاق",
-  }
+  };
 
-  const isVotingOpen = decision.voting.status === "open"
-  const totalVotes = decision.voting.inFavor + decision.voting.against + decision.voting.abstain
-  const totalMembers = boardMembers.length
-  const votedCount = decision.voting.votes.filter((v: any) => v.vote !== null).length
+  const isVotingOpen = decision.voting.status === "open";
+  const totalVotes = decision.voting.inFavor + decision.voting.against + decision.voting.abstain;
+  const totalMembers = boardMembers.length;
+  const votedCount = decision.voting.votes.filter((v: any) => v.vote !== null).length;
 
   // Calculate percentages
-  const inFavorPercentage = totalVotes > 0 ? Math.round((decision.voting.inFavor / totalVotes) * 100) : 0
-  const againstPercentage = totalVotes > 0 ? Math.round((decision.voting.against / totalVotes) * 100) : 0
-  const abstainPercentage = totalVotes > 0 ? Math.round((decision.voting.abstain / totalVotes) * 100) : 0
+  const inFavorPercentage = totalVotes > 0 ? Math.round((decision.voting.inFavor / totalVotes) * 100) : 0;
+  const againstPercentage = totalVotes > 0 ? Math.round((decision.voting.against / totalVotes) * 100) : 0;
+  const abstainPercentage = totalVotes > 0 ? Math.round((decision.voting.abstain / totalVotes) * 100) : 0;
 
   // Find current user's vote
   const currentUserVote = decision.voting.votes.find(
-    (v: any) => boardMembers.find((bm) => bm.id === v.memberId)?.isCurrentUser,
-  )?.vote
+    (v: any) => boardMembers.find((bm) => bm.id === v.memberId)?.isCurrentUser
+  )?.vote;
 
   const handleVoteSelect = (vote: string) => {
-    setSelectedVote(vote)
-  }
+    setSelectedVote(vote);
+  };
 
   const handleVoteSubmit = () => {
     if (selectedVote) {
-      onVoteSubmit(decision.id, selectedVote)
-      setSelectedVote(null)
-      // You might need to manage the dialog state here if it doesn't close automatically
-      // For example, find the dialog trigger/content and close it programmatically if possible,
-      // or pass a closing function from the parent component.
+      onVoteSubmit(decision.id, selectedVote);
+      setSelectedVote(null);
     }
-  }
+  };
 
   const getVoteIcon = (vote: string | null) => {
     switch (vote) {
       case "in-favor":
-        return <ThumbsUp className="h-4 w-4 text-emerald-500" />
+        return <ThumbsUp className="h-4 w-4 text-emerald-500" />;
       case "against":
-        return <ThumbsDown className="h-4 w-4 text-red-500" />
+        return <ThumbsDown className="h-4 w-4 text-red-500" />;
       case "abstain":
-        return <Minus className="h-4 w-4 text-amber-500" />
+        return <Minus className="h-4 w-4 text-amber-500" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-400" />
+        return <AlertCircle className="h-4 w-4 text-gray-400" />;
     }
-  }
+  };
 
   const getVoteText = (vote: string | null) => {
     switch (vote) {
       case "in-favor":
-        return translations.inFavor
+        return translations.inFavor;
       case "against":
-        return translations.against
+        return translations.against;
       case "abstain":
-        return translations.abstain
+        return translations.abstain;
       default:
-        return translations.notVoted
+        return translations.notVoted;
     }
-  }
+  };
 
   const getVoteClass = (vote: string | null) => {
     switch (vote) {
       case "in-favor":
-        return "text-emerald-500"
+        return "text-emerald-500";
       case "against":
-        return "text-red-500"
+        return "text-red-500";
       case "abstain":
-        return "text-amber-500"
+        return "text-amber-500";
       default:
-        return "text-gray-400"
+        return "text-gray-400";
     }
-  }
+  };
 
   return (
     <div className="mt-4">
@@ -202,7 +199,6 @@ export function VotingSystem({ decision, language, onVoteSubmit }: VotingSystemP
                 </div>
               </div>
               <DialogFooter>
-                {/* Assuming DialogClose is implicitly handled by Button or needs explicit state management */}
                 <Button variant="outline" onClick={() => setSelectedVote(null)}>
                   {translations.cancel}
                 </Button>
@@ -219,76 +215,75 @@ export function VotingSystem({ decision, language, onVoteSubmit }: VotingSystemP
           </Button>
         )}
 
-         <Dialog onOpenChange={setShowVotingDetails}>
-            <DialogTrigger asChild>
-                <Button variant="secondary" size="sm" className="flex-1">
-                    {translations.viewResults}
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                    <DialogTitle>
-                        {translations.votingDetails}: {decision.title}
-                    </DialogTitle>
-                </DialogHeader>
-                <div className="py-4">
-                    <h4 className="text-sm font-medium mb-3">{translations.votingResults}</h4>
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                        <div className="flex flex-col items-center p-3 bg-emerald-50 rounded-md">
-                            <span className="text-2xl font-bold text-emerald-600">{decision.voting.inFavor}</span>
-                            <span className="text-sm text-emerald-700">{translations.inFavor}</span>
-                        </div>
-                        <div className="flex flex-col items-center p-3 bg-red-50 rounded-md">
-                            <span className="text-2xl font-bold text-red-600">{decision.voting.against}</span>
-                            <span className="text-sm text-red-700">{translations.against}</span>
-                        </div>
-                        <div className="flex flex-col items-center p-3 bg-amber-50 rounded-md">
-                            <span className="text-2xl font-bold text-amber-600">{decision.voting.abstain}</span>
-                            <span className="text-sm text-amber-700">{translations.abstain}</span>
-                        </div>
-                    </div>
-
-                    <h4 className="text-sm font-medium mb-3">{translations.boardMembers}</h4>
-                    <div className="space-y-3 max-h-[200px] overflow-y-auto">
-                        {decision.voting.votes.map((vote: any) => {
-                            const member = boardMembers.find((bm) => bm.id === vote.memberId)
-                            if (!member) return null
-
-                            return (
-                                <div key={vote.memberId} className="flex items-center justify-between p-2 border rounded-md">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage src={member.avatar} alt={member.name} />
-                                            <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-sm font-medium">
-                                                {member.name}
-                                                {member.isCurrentUser && (
-                                                    <span className="text-xs text-gray-500 ml-1">({translations.yourVote})</span>
-                                                )}
-                                            </p>
-                                            <p className="text-xs text-gray-500">{member.role}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        {getVoteIcon(vote.vote)}
-                                        <span className={`text-sm ${getVoteClass(vote.vote)}`}>{getVoteText(vote.vote)}</span>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
+        <Dialog open={showVotingDetails} onOpenChange={setShowVotingDetails}>
+          <DialogTrigger asChild>
+            <Button variant="secondary" size="sm" className="flex-1">
+              {translations.viewResults}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>
+                {translations.votingDetails}: {decision.title}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <h4 className="text-sm font-medium mb-3">{translations.votingResults}</h4>
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="flex flex-col items-center p-3 bg-emerald-50 rounded-md">
+                  <span className="text-2xl font-bold text-emerald-600">{decision.voting.inFavor}</span>
+                  <span className="text-sm text-emerald-700">{translations.inFavor}</span>
                 </div>
-                 <DialogFooter>
-                     {/* Need to manually close the dialog */}
-                     <Button onClick={() => setShowVotingDetails(false)} variant="secondary">
-                         {translations.close}
-                     </Button>
-                 </DialogFooter>
-            </DialogContent>
+                <div className="flex flex-col items-center p-3 bg-red-50 rounded-md">
+                  <span className="text-2xl font-bold text-red-600">{decision.voting.against}</span>
+                  <span className="text-sm text-red-700">{translations.against}</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-amber-50 rounded-md">
+                  <span className="text-2xl font-bold text-amber-600">{decision.voting.abstain}</span>
+                  <span className="text-sm text-amber-700">{translations.abstain}</span>
+                </div>
+              </div>
+
+              <h4 className="text-sm font-medium mb-3">{translations.boardMembers}</h4>
+              <div className="space-y-3 max-h-[200px] overflow-y-auto">
+                {decision.voting.votes.map((vote: any) => {
+                  const member = boardMembers.find((bm) => bm.id === vote.memberId);
+                  if (!member) return null;
+
+                  return (
+                    <div key={vote.memberId} className="flex items-center justify-between p-2 border rounded-md">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={member.avatar} alt={member.name} />
+                          <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {member.name}
+                            {member.isCurrentUser && (
+                              <span className="text-xs text-gray-500 ml-1">({translations.yourVote})</span>
+                            )}
+                          </p>
+                          <p className="text-xs text-gray-500">{member.role}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {getVoteIcon(vote.vote)}
+                        <span className={`text-sm ${getVoteClass(vote.vote)}`}>{getVoteText(vote.vote)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setShowVotingDetails(false)} variant="secondary">
+                {translations.close}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
         </Dialog>
       </div>
     </div>
-)
+  );
 }

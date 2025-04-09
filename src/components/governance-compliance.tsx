@@ -1,17 +1,19 @@
-"use client"
+// src/components/governance-compliance.tsx
+"use client";
 
-import type React from "react" // Added React import
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { format, parse, isAfter, differenceInDays } from "date-fns" // Added differenceInDays
-import { ar } from "date-fns/locale"
-import { complianceItems } from "@/lib/data" // Adjusted path
+import type React from "react"; // Added React import
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { format, parse, isAfter, differenceInDays } from "date-fns";
+import { ar } from "date-fns/locale";
+// Import ComplianceStatus from data.ts, remove TenderStatus/Category import
+import { complianceItems, type ComplianceStatus } from "@/lib/data";
 import {
   CheckCircle,
   Clock,
@@ -23,15 +25,15 @@ import {
   Search,
   Filter,
   Calendar,
-} from "lucide-react"
-import { useToast } from "@/components/ui/use-toast" // Adjusted path
-import type { TenderStatus, TenderCategory } from "@/lib/neom-data"; // Assuming types might be shared or need defining locally
+} from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Separator } from "@/components/ui/separator" // Adjusted path
 
 interface GovernanceComplianceProps {
-  language: "en" | "ar"
+  language: "en" | "ar";
 }
 
-// Define ComplianceItem type locally if not imported
+// Define ComplianceItem type using the imported ComplianceStatus
 interface ComplianceItem {
   id: string;
   portalName: string;
@@ -40,23 +42,24 @@ interface ComplianceItem {
   requiredForPrivate: boolean;
   purpose: string;
   link: string;
-  status: TenderStatus; // Reuse TenderStatus or define a specific one
+  status: ComplianceStatus; // Use ComplianceStatus here
   lastSubmission: string | null;
   nextDue: string;
   template: string;
   receipt: string | null;
 }
 
-
 export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
-  const [filter, setFilter] = useState<TenderStatus | "all">("all") // Use TenderStatus
-  const [searchTerm, setSearchTerm] = useState("")
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<ComplianceItem | null>(null) // Use ComplianceItem type
-  const [uploadFile, setUploadFile] = useState<File | null>(null)
-  const [complianceData, setComplianceData] = useState<ComplianceItem[]>(complianceItems) // Use ComplianceItem type
+  // Use ComplianceStatus for filter state
+  const [filter, setFilter] = useState<ComplianceStatus | "all">("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ComplianceItem | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  // Use ComplianceItem[] for data state
+  const [complianceData, setComplianceData] = useState<ComplianceItem[]>(complianceItems);
 
-  const { toast } = useToast(); // Destructure toast
+  const { toast } = useToast();
 
   const translations = {
     governanceCompliance: language === "en" ? "Governance & Compliance" : "الحوكمة والامتثال",
@@ -93,9 +96,13 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
     complianceStats: language === "en" ? "Compliance Statistics" : "إحصائيات الامتثال",
     totalItems: language === "en" ? "Total Items" : "إجمالي العناصر",
     upcomingDeadlines: language === "en" ? "Upcoming Deadlines" : "المواعيد النهائية القادمة",
-  }
+    // Add missing translations if needed, though they seem unused now
+    awarded: language === "en" ? "Awarded" : "تم الترسية",
+    cancelled: language === "en" ? "Cancelled" : "ملغي",
+  };
 
-  const getStatusBadge = (status: TenderStatus) => { // Use TenderStatus
+  // Use ComplianceStatus in the function signature
+  const getStatusBadge = (status: ComplianceStatus) => {
     switch (status) {
       case "completed":
         return (
@@ -103,128 +110,126 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
             <CheckCircle className="h-3 w-3" />
             {translations.completed}
           </Badge>
-        )
+        );
       case "pending":
         return (
           <Badge variant="outline" className="flex items-center gap-1 border-amber-200 text-amber-800">
             <Clock className="h-3 w-3" />
             {translations.pending}
           </Badge>
-        )
+        );
       case "overdue":
         return (
           <Badge variant="destructive" className="flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" />
             {translations.overdue}
           </Badge>
-        )
-       // Add cases for 'awarded' and 'cancelled' if they appear in complianceItems status
-       case "awarded":
-            return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Awarded</Badge>; // Or use translation
-       case "cancelled":
-            return <Badge variant="destructive">Cancelled</Badge>; // Or use translation
+        );
+      // Remove cases for awarded/cancelled unless they are added to ComplianceStatus
+      // case "awarded":
+      //   return <Badge className="bg-blue-100 text-blue-800 border-blue-200">{translations.awarded}</Badge>;
+      // case "cancelled":
+      //   return <Badge variant="destructive">{translations.cancelled}</Badge>;
       default:
-        return null
+        // This should ideally not happen if status is correctly typed
+        const _exhaustiveCheck: never = status;
+        return null;
     }
-  }
+  };
 
   const getImpactBadge = (impact: string) => {
     switch (impact) {
       case "Required":
-        return <Badge className="bg-red-100 text-red-800 border-red-200">{translations.required}</Badge>
+        return <Badge className="bg-red-100 text-red-800 border-red-200">{translations.required}</Badge>;
       case "Maybe Required":
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">{translations.maybeRequired}</Badge>
+        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">{translations.maybeRequired}</Badge>;
       case "No":
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">{translations.no}</Badge>
+        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">{translations.no}</Badge>;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getRequiredBadge = (required: boolean) => {
     return required ? (
       <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">{translations.yes}</Badge>
     ) : (
       <Badge className="bg-gray-100 text-gray-800 border-gray-200">{translations.no}</Badge>
-    )
-  }
+    );
+  };
 
-  const handleUpload = (item: ComplianceItem) => { // Use ComplianceItem type
-    setSelectedItem(item)
-    setUploadDialogOpen(true)
-  }
+  const handleUpload = (item: ComplianceItem) => {
+    setSelectedItem(item);
+    setUploadDialogOpen(true);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setUploadFile(e.target.files[0])
+      setUploadFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleSubmitUpload = () => {
-    if (!uploadFile || !selectedItem) return
+    if (!uploadFile || !selectedItem) return;
 
     const updatedData = complianceData.map((item) => {
       if (item.id === selectedItem.id) {
         return {
           ...item,
-          status: "completed" as TenderStatus, // Assert type
+          status: "completed" as ComplianceStatus, // No need to assert type if 'complianceItems' uses correct statuses
           lastSubmission: format(new Date(), "yyyy-MM-dd"),
           receipt: uploadFile.name,
-        }
+        };
       }
-      return item
-    })
+      return item;
+    });
 
-    setComplianceData(updatedData)
-    setUploadDialogOpen(false)
-    setUploadFile(null)
+    setComplianceData(updatedData);
+    setUploadDialogOpen(false);
+    setUploadFile(null);
 
     toast({
       title: translations.uploadSuccess,
       description: `${selectedItem.portalName}: ${uploadFile.name}`,
-    })
-  }
+    });
+  };
 
-  // Filter and search the compliance items
   const filteredItems = complianceData.filter((item) => {
-    const matchesFilter = filter === "all" || item.status === filter
+    const matchesFilter = filter === "all" || item.status === filter;
     const matchesSearch =
       searchTerm === "" ||
       item.portalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.purpose.toLowerCase().includes(searchTerm.toLowerCase())
+      item.purpose.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
-    return matchesFilter && matchesSearch
-  })
+  const completedCount = complianceData.filter((item) => item.status === "completed").length;
+  const pendingCount = complianceData.filter((item) => item.status === "pending").length;
+  const overdueCount = complianceData.filter((item) => item.status === "overdue").length;
 
-  // Count items by status
-  const completedCount = complianceData.filter((item) => item.status === "completed").length
-  const pendingCount = complianceData.filter((item) => item.status === "pending").length
-  const overdueCount = complianceData.filter((item) => item.status === "overdue").length
-
-  // Get upcoming deadlines (next 30 days)
-  const today = new Date()
+  const today = new Date();
   const upcomingDeadlines = complianceData
     .filter((item) => {
-      try { // Add error handling for parse
-         const dueDate = parse(item.nextDue, "yyyy-MM-dd", new Date())
-         const thirtyDaysFromNow = new Date()
-         thirtyDaysFromNow.setDate(today.getDate() + 30)
-
-         return item.status !== "completed" && isAfter(dueDate, today) && !isAfter(dueDate, thirtyDaysFromNow)
+      try {
+         const dueDate = parse(item.nextDue, "yyyy-MM-dd", new Date());
+         const thirtyDaysFromNow = new Date();
+         thirtyDaysFromNow.setDate(today.getDate() + 30);
+         // Use ComplianceStatus for comparison
+         return item.status !== "completed" && isAfter(dueDate, today) && !isAfter(dueDate, thirtyDaysFromNow);
        } catch(e) {
-         console.error("Error parsing date:", item.nextDue, e);
+         console.error("Error parsing date in upcoming deadlines filter:", item.nextDue, e);
          return false;
        }
     })
     .sort((a, b) => {
        try {
-         const dateA = parse(a.nextDue, "yyyy-MM-dd", new Date())
-         const dateB = parse(b.nextDue, "yyyy-MM-dd", new Date())
-         return dateA.getTime() - dateB.getTime()
+         const dateA = parse(a.nextDue, "yyyy-MM-dd", new Date());
+         const dateB = parse(b.nextDue, "yyyy-MM-dd", new Date());
+         return dateA.getTime() - dateB.getTime();
        } catch(e) {
-         return 0; // Keep original order on error
+         return 0;
        }
-    })
+    });
 
   return (
     <div className="space-y-6">
@@ -246,13 +251,13 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                   />
                 </div>
               </div>
-
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-gray-400" />
                 <span className="text-sm text-gray-500">{translations.filterBy}:</span>
                 <Tabs
                   value={filter}
-                  onValueChange={(value) => setFilter(value as TenderStatus | "all")}
+                  // Use ComplianceStatus for filter state change
+                  onValueChange={(value) => setFilter(value as ComplianceStatus | "all")}
                   className="w-auto"
                 >
                   <TabsList>
@@ -268,9 +273,9 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                     <TabsTrigger value="overdue" className="text-xs">
                       {translations.overdue}
                     </TabsTrigger>
-                    {/* Add Awarded/Cancelled if needed */}
-                     <TabsTrigger value="awarded" className="text-xs">{translations.awarded}</TabsTrigger>
-                     <TabsTrigger value="cancelled" className="text-xs">{translations.cancelled}</TabsTrigger>
+                    {/* Remove Awarded/Cancelled unless needed for compliance */}
+                    {/* <TabsTrigger value="awarded" className="text-xs">{translations.awarded}</TabsTrigger> */}
+                    {/* <TabsTrigger value="cancelled" className="text-xs">{translations.cancelled}</TabsTrigger> */}
                   </TabsList>
                 </Tabs>
               </div>
@@ -290,14 +295,14 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                 <tbody>
                   {filteredItems.map((item) => {
                      let nextDueDate: Date | null = null;
-                     let isOverdue = false;
+                     let isOverdueItem = false; // Renamed to avoid conflict with state variable
                      try {
                          nextDueDate = parse(item.nextDue, "yyyy-MM-dd", new Date());
-                         isOverdue = isAfter(today, nextDueDate) && item.status !== "completed";
+                         // Use ComplianceStatus for comparison
+                         isOverdueItem = isAfter(today, nextDueDate) && item.status !== "completed";
                      } catch(e) {
                          console.error("Error parsing nextDue date:", item.nextDue, e);
                      }
-
 
                     return (
                       <tr key={item.id} className="border-b hover:bg-gray-50">
@@ -306,16 +311,16 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                           <div className="text-xs text-gray-500 mt-1">{item.purpose}</div>
                         </td>
                         <td className="py-3 px-4">{getImpactBadge(item.impact)}</td>
+                        {/* Use ComplianceStatus */}
                         <td className="py-3 px-4">{getStatusBadge(item.status)}</td>
                         <td className="py-3 px-4">
                            {nextDueDate ? (
-                              <div className={`text-sm ${isOverdue ? "text-red-600 font-medium" : ""}`}>
+                              <div className={`text-sm ${isOverdueItem ? "text-red-600 font-medium" : ""}`}>
                                 {format(nextDueDate, translations.dateFormat, {
                                   locale: language === "ar" ? ar : undefined,
                                 })}
                               </div>
                            ) : <div className="text-sm text-gray-400">Invalid Date</div>}
-
                           {item.lastSubmission && (
                             <div className="text-xs text-gray-500 mt-1">
                               {translations.lastSubmission}:{" "}
@@ -331,37 +336,25 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                               <Download className="h-3 w-3 mr-1" />
                               {translations.downloadTemplate}
                             </Button>
-
                             {item.receipt ? (
                               <Button variant="outline" size="sm" className="h-8 text-xs">
                                 <FileText className="h-3 w-3 mr-1" />
                                 {translations.viewReceipt}
                               </Button>
                             ) : (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 text-xs"
-                                onClick={() => handleUpload(item)}
-                              >
+                              <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => handleUpload(item)}>
                                 <Upload className="h-3 w-3 mr-1" />
                                 {translations.uploadReceipt}
                               </Button>
                             )}
-
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs"
-                              onClick={() => window.open(item.link, "_blank")}
-                            >
+                            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => window.open(item.link, "_blank")}>
                               <ExternalLink className="h-3 w-3 mr-1" />
                               {translations.visitPortal}
                             </Button>
                           </div>
                         </td>
                       </tr>
-                    )
+                    );
                   })}
                 </tbody>
               </table>
@@ -380,7 +373,6 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                   <span className="text-sm text-gray-500">{translations.totalItems}</span>
                   <span className="text-xl font-bold">{complianceData.length}</span>
                 </div>
-
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-emerald-50 p-2 rounded-md text-center">
                     <div className="text-emerald-600 text-lg font-bold">{completedCount}</div>
@@ -418,6 +410,7 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
                              })}
                           </div>
                         </div>
+                        {/* Use ComplianceStatus */}
                         {getStatusBadge(item.status)}
                       </div>
                     </div>
@@ -461,5 +454,5 @@ export function GovernanceCompliance({ language }: GovernanceComplianceProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

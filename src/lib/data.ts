@@ -4,6 +4,8 @@ export const boardMember = {
     email: "abdullah.qahtani@company.sa",
   }
 
+  
+
   // Add more board members and expand existing ones with voting stats
   export const boardMembers = [
     {
@@ -869,7 +871,24 @@ export const boardMember = {
     },
   ]
 
-  export const complianceItems = [
+  export type ComplianceStatus = "completed" | "pending" | "overdue";
+
+  interface ComplianceItem {
+    id: string;
+    portalName: string;
+    impact: string;
+    requiredForPublic: boolean;
+    requiredForPrivate: boolean;
+    purpose: string;
+    link: string;
+    status: ComplianceStatus; // Use the defined type
+    lastSubmission: string | null;
+    nextDue: string;
+    template: string;
+    receipt: string | null;
+  }
+
+  export const complianceItems: ComplianceItem[] = [
     {
       id: "comp1",
       portalName: "Aamaly",
@@ -878,7 +897,7 @@ export const boardMember = {
       requiredForPrivate: true,
       purpose: "Online platform for company registration, document submission, and accessing public company information",
       link: "https://aamaly.sa",
-      status: "completed", // completed, pending, overdue
+      status: "completed", // Now TS knows this must be 'completed', 'pending', or 'overdue'
       lastSubmission: "2025-02-15",
       nextDue: "2025-05-15",
       template: "aamaly-template.pdf",
@@ -892,7 +911,7 @@ export const boardMember = {
       requiredForPrivate: true,
       purpose: "Name reservation, Articles of Association attestation, and other business setup services",
       link: "https://moc.gov.sa",
-      status: "pending",
+      status: "pending", // TS checks this against ComplianceStatus
       lastSubmission: "2024-12-10",
       nextDue: "2025-03-10",
       template: "moc-template.pdf",
@@ -906,7 +925,7 @@ export const boardMember = {
       requiredForPrivate: true,
       purpose: "Apply for investment licenses, amend licenses, issue GM Visa, and receive advisory services",
       link: "https://misa.gov.sa",
-      status: "overdue",
+      status: "overdue", // TS checks this against ComplianceStatus
       lastSubmission: "2024-11-05",
       nextDue: "2025-02-05",
       template: "misa-template.pdf",

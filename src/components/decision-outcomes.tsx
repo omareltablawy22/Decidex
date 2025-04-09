@@ -1,13 +1,14 @@
-"use client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { VotingSystem } from "./voting-system" // Ensure correct path
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VotingSystem } from "./voting-system";
 
 interface DecisionOutcomesProps {
-  decisions: any[]
-  language: "en" | "ar"
-  onVoteSubmit: (decisionId: string, vote: string) => void
+  decisions: any[];
+  language: "en" | "ar";
+  onVoteSubmit: (decisionId: string, vote: string) => void;
 }
 
 export function DecisionOutcomes({ decisions, language, onVoteSubmit }: DecisionOutcomesProps) {
@@ -22,78 +23,78 @@ export function DecisionOutcomes({ decisions, language, onVoteSubmit }: Decision
     operational: language === "en" ? "Operational" : "تشغيلي",
     governance: language === "en" ? "Governance" : "حوكمة",
     notes: language === "en" ? "Notes" : "ملاحظات",
-  }
+  };
 
   const getOutcomeIcon = (outcome: string | null) => {
     switch (outcome) {
       case "success":
-        return <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+        return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
       case "failure":
-        return <XCircle className="h-5 w-5 text-red-500" />
+        return <XCircle className="h-5 w-5 text-red-500" />;
       case "needs-review":
-        return <AlertCircle className="h-5 w-5 text-amber-500" />
+        return <AlertCircle className="h-5 w-5 text-amber-500" />;
       default:
-        return <AlertCircle className="h-5 w-5 text-gray-400" />
+        return <AlertCircle className="h-5 w-5 text-gray-400" />;
     }
-  }
+  };
 
   const getOutcomeText = (outcome: string | null) => {
     switch (outcome) {
       case "success":
-        return translations.success
+        return translations.success;
       case "failure":
-        return translations.failure
+        return translations.failure;
       case "needs-review":
-        return translations.needsReview
+        return translations.needsReview;
       default:
-        return translations.pending
+        return translations.pending;
     }
-  }
+  };
 
   const getOutcomeClass = (outcome: string | null) => {
     switch (outcome) {
       case "success":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200"
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
       case "failure":
-        return "bg-red-50 text-red-700 border-red-200"
+        return "bg-red-50 text-red-700 border-red-200";
       case "needs-review":
-        return "bg-amber-50 text-amber-700 border-amber-200"
+        return "bg-amber-50 text-amber-700 border-amber-200";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200"
+        return "bg-gray-50 text-gray-700 border-gray-200";
     }
-  }
+  };
 
   const getCategoryText = (category: string) => {
     switch (category) {
       case "strategic":
-        return translations.strategic
+        return translations.strategic;
       case "operational":
-        return translations.operational
+        return translations.operational;
       case "governance":
-        return translations.governance
+        return translations.governance;
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const getCategoryClass = (category: string) => {
     switch (category) {
       case "strategic":
-        return "bg-emerald-100 text-emerald-800"
+        return "bg-emerald-100 text-emerald-800";
       case "operational":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "governance":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   // Count outcomes by type
-  const successCount = decisions.filter((d) => d.outcome === "success").length
-  const failureCount = decisions.filter((d) => d.outcome === "failure").length
-  const reviewCount = decisions.filter((d) => d.outcome === "needs-review").length
-  const pendingCount = decisions.filter((d) => d.outcome === null).length
+  const successCount = decisions.filter((d) => d.outcome === "success").length;
+  const failureCount = decisions.filter((d) => d.outcome === "failure").length;
+  const reviewCount = decisions.filter((d) => d.outcome === "needs-review").length;
+  const pendingCount = decisions.filter((d) => d.outcome === null).length;
 
   return (
     <Card className="shadow-sm mt-6">
@@ -236,5 +237,5 @@ export function DecisionOutcomes({ decisions, language, onVoteSubmit }: Decision
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }
